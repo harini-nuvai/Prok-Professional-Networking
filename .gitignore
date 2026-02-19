@@ -2,3 +2,9 @@ venv/
 __pycache__/
 node_modules/
 .env
+
+# Firebase
+firebase-debug.log
+
+# Playwright
+.playwright-mcp/

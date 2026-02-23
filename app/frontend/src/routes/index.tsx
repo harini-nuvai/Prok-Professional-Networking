@@ -1,6 +1,8 @@
-import { createBrowserRouter } from 'react-router-dom';
+import React from 'react';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import Login from '../components/auth/Login';
 import Signup from '../components/auth/Signup';
+import ProtectedRoute from '../components/auth/ProtectedRoute';
 import ProfileView from '../components/profile/ProfileView';
 import ProfileEdit from '../components/profile/ProfileEdit';
 import PostCreate from '../components/posts/PostCreate';
@@ -9,10 +11,14 @@ import Feed from '../components/feed/Feed';
 import JobList from '../components/job-board/JobList';
 import MessageList from '../components/messaging/MessageList';
 
+const protect = (element: React.ReactNode) => (
+  <ProtectedRoute>{element}</ProtectedRoute>
+);
+
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Login />,
+    element: <Navigate to="/login" replace />,
   },
   {
     path: '/login',
@@ -23,27 +29,31 @@ export const router = createBrowserRouter([
     element: <Signup />,
   },
   {
+    path: '/feed',
+    element: protect(<Feed />),
+  },
+  {
     path: '/profile',
-    element: <ProfileView />,
+    element: protect(<ProfileView />),
   },
   {
     path: '/profile/edit',
-    element: <ProfileEdit />,
+    element: protect(<ProfileEdit />),
   },
   {
     path: '/posts/create',
-    element: <PostCreate />,
+    element: protect(<PostCreate />),
   },
   {
     path: '/posts',
-    element: <PostList />,
+    element: protect(<PostList />),
   },
   {
     path: '/jobs',
-    element: <JobList />,
+    element: protect(<JobList />),
   },
   {
     path: '/messages',
-    element: <MessageList />,
+    element: protect(<MessageList />),
   },
-]); 
+]);

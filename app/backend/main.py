@@ -1,40 +1,48 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-from config import Config
+from flask_migrate import Migrate
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 
-# Import models
-from models.user import User, db as user_db
-from models.profile import Profile, Skill, Experience, Education, db as profile_db
 
-# Create Flask app
-app = Flask(__name__)
-app.config.from_object(Config)
+def create_app():
+    app = Flask(__name__)
 
-# Initialize extensions
-CORS(app)
+    # Load config
+    from config import Config
+    app.config.from_object(Config)
 
-# Initialize database
-db = SQLAlchemy(app)
+    # Extensions
+    from models.user import db
+    db.init_app(app)
 
-def setup_database():
-    """Setup database tables"""
+    JWTManager(app)
+    CORS(app, resources={r"/*": {"origins": "*"}})
+    Migrate(app, db)
+
+    # Import all models so SQLAlchemy knows about them
+    from models.user import User          # noqa: F401
+    from models.profile import Profile, Skill, Experience, Education  # noqa: F401
+
+    # Register blueprints
+    from api.auth import auth_bp
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+
+    # Optionally register other blueprints when implemented
+    # from api.profile import profile_bp
+    # app.register_blueprint(profile_bp, url_prefix='/profile')
+
+    return app, db
+
+
+app, db = create_app()
+
+
+if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         print("✅ Database tables created successfully!")
-
-# Create a function to initialize the app
-def create_app():
-    """Application factory function"""
-    return app
-
-if __name__ == '__main__':
-    # Setup database tables
-    setup_database()
-    
-    # Run the app
-    app.run(debug=True) 
+    app.run(debug=True, port=5000)

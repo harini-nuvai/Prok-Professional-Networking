@@ -1,44 +1,36 @@
-const API_URL = 'http://localhost:5000';
+/**
+ * services/api.ts — Legacy API service (kept for backwards compatibility with
+ * other components like profile, posts, etc.).
+ *
+ * For auth calls, components should import from lib/apiClient.ts instead.
+ */
+import { getToken } from "../lib/auth";
+
+const BASE_URL = "http://localhost:5000/api";
+
+/** Build request headers, attaching the JWT if present. */
+function authHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const token = getToken();
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  return headers;
+}
 
 export const api = {
-  // Auth endpoints
-  login: async (credentials: { email: string; password: string }) => {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(credentials),
-    });
-    return response.json();
-  },
-
-  signup: async (userData: { email: string; password: string; name: string }) => {
-    const response = await fetch(`${API_URL}/auth/signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData),
-    });
-    return response.json();
-  },
-
-  // Profile endpoints
+  // ── Profile ─────────────────────────────────────────────────────────────────
   getProfile: async () => {
-    const response = await fetch(`${API_URL}/profile`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
+    const response = await fetch(`${BASE_URL}/profile`, {
+      headers: authHeaders(),
     });
     return response.json();
   },
 
-  updateProfile: async (profileData: any) => {
-    const response = await fetch(`${API_URL}/profile`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
+  updateProfile: async (profileData: unknown) => {
+    const response = await fetch(`${BASE_URL}/profile`, {
+      method: "PUT",
+      headers: authHeaders(),
       body: JSON.stringify(profileData),
     });
     return response.json();
   },
-}; 
+};

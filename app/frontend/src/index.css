@@ -7,6 +7,12 @@
   body {
     @apply text-gray-900 bg-white dark:bg-gray-900 dark:text-white;
   }
+
+  input,
+  textarea,
+  select {
+    @apply text-gray-900 bg-white placeholder:text-gray-400;
+  }
 }
 
 @layer components {

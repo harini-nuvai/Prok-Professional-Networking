@@ -1,7 +1,7 @@
 export interface User {
   id: number;
+  username: string;
   email: string;
-  name: string;
   created_at: string;
 }
 
@@ -66,4 +66,4 @@ export interface Message {
   content: string;
   created_at: string;
   read: boolean;
-} 
+}
